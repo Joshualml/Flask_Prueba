@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Data</title>
+
+    <link rel="stylesheet" href="../static/sensor.css">
+
+
+</head>
+<body>
+    <div class="borde">
+        <h1>Bienvenido, {{ username }}!</h1>
+        <form action="{{ url_for('generate_data') }}" method="post">
+            <button type="submit">Generador de datos</button>
+        </form>
+        <h2>valores recientes</h2>
+        <div id="sensor-readings">
+            {% for reading in readings %}
+                <div class="sensor-reading">Valor 1: {{ reading.value1 }} | Valor 2: {{ reading.value2 }}</div>
+            {% endfor %}
+        </div>
+        <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+    </div>
+    </body>
+</html>
