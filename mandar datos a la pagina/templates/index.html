@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor de Presion</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #pressure {
+            font-size: 2em;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Lectura del Sensor de Presion</h1>
+    <div id="pressure">Cargando...</div>
+    <canvas id="pressureChart" width="400" height="200"></canvas>
+    <script>
+        let pressureData = [];
+        let labels = [];
+        const ctx = document.getElementById('pressureChart').getContext('2d');
+        const pressureChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Presion (Pa)',
+                    data: pressureData,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        async function fetchSensorData() {
+            try {
+                const response = await fetch('/sensor-data');
+                const data = await response.json();
+                document.getElementById('pressure').innerText = data.pressure.toFixed(2) + ' Pa';
+
+                const timestamp = new Date().toLocaleTimeString();
+                labels.push(timestamp);
+                pressureData.push(data.pressure.toFixed(2));
+                if (labels.length > 20) {  
+                    labels.shift();
+                    pressureData.shift();
+                }
+
+                pressureChart.update();
+            } catch (error) {
+                console.error('Error fetching sensor data:', error);
+            }
+        }
+
+        // Fetch sensor data every 2 seconds
+        setInterval(fetchSensorData, 2000);
+        // Fetch initial data
+        fetchSensorData();
+    </script>
+</body>
+</html>
